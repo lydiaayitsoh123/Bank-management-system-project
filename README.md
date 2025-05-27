@@ -25,5 +25,5 @@ A simple bank management system in Python that supports:
 ### set up database 
 python db/setup.py
 
-### Run CLI 
+## Run CLI 
 python cli.py
