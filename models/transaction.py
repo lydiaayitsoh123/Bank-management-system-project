@@ -8,7 +8,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True)
     amount = Column(Float)
-    type = Column(String)  # 'deposit' or 'withdrawal'
+    type = Column(String)  
     account_id = Column(Integer, ForeignKey('accounts.id'))
 
     account = relationship("Account", back_populates="transactions")
