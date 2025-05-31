@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from . import Base
-from .customer import Customer
+from models import Base
 
 class Account(Base):
     __tablename__ = 'accounts'
@@ -11,7 +10,3 @@ class Account(Base):
     customer_id = Column(Integer, ForeignKey('customers.id'))
 
     customer = relationship("Customer", back_populates="accounts")
-    transactions = relationship("Transaction", back_populates="account")
-
-    def __repr__(self):
-        return f"<Account(id={self.id}, balance={self.balance})>"

@@ -5,6 +5,8 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 
 from models import Customer, Account
+from models import session
+
 from helper import (
     create_record,
     get_all,
@@ -16,13 +18,12 @@ from helper import (
 
 def create_customer():
     name = input("Enter customer name: ")
-    if not name.strip():
-        print(" Name cannot be empty.")
-        return
-    customer = Customer(name=name)
-    create_record(customer)
-    print(f"✅ Customer '{name}' added with ID {customer.id}.")
-
+    email = input("Enter customer email: ")
+    customer = Customer(name=name, email=email)
+    session.add(customer)
+    session.commit()
+    print(f"✅ Customer '{name}' created with ID {customer.id} and email '{email}'.\n")
+    
 def create_account():
     customer_id = input("Enter customer ID to create an account for: ")
     customer = get_by_id(Customer, customer_id)
@@ -34,18 +35,22 @@ def create_account():
         print(" Customer not found.")
 
 def deposit():
-    account_id = input("Enter account ID: ")
-    account = get_by_id(Account, account_id)
+    account_id = int(input("Enter account ID: "))
+    account = session.query(Account).get(account_id)
+
     if not account:
-        print(" Account not found.")
+        print("Account not found.")
         return
+
     amount = float(input("Enter amount to deposit: "))
-    if amount <= 0:
-        print("Amount must be positive.")
-        return
+
+    
+    if account.balance is None:
+        account.balance = 0.0
+
     account.balance += amount
-    update_record()
-    print(f"✅ Deposited {amount}. New balance: {account.balance}")
+    session.commit()
+    print(f"✅ Deposited {amount} to account {account_id}. New balance: {account.balance:.2f}\n")
 
 def withdraw():
     account_id = input("Enter account ID: ")
@@ -65,12 +70,13 @@ def withdraw():
         print(" Insufficient funds.")
 
 def list_customers():
-    customers = get_all(Customer)
-    if customers:
-        for c in customers:
-            print(c)
-    else:
-        print(" No customers found.")
+    customers = session.query(Customer).all()
+    print("\n📋 List of Customers:")
+    for customer in customers:
+        print(f"ID: {customer.id} | Name: {customer.name} | Email: {customer.email}")
+    print("")
+
+    
 
 def list_accounts():
     accounts = get_all(Account)
